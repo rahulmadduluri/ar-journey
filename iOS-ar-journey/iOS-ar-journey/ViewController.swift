@@ -14,24 +14,40 @@ enum ArbiTrackState {
     case ARBI_TRACKING
 }
 
+enum ObjectType {
+    case model
+    case video
+}
+
 class ViewController: ARCameraViewController {
     
     var modelNode: ARModelNode?
+    var videoNode: ARVideoNode?
     
     var lastScale: Float = 0
     var lastPanX: Float = 0
-    var arbiButtonState: ArbiTrackState = .ARBI_PLACEMENT
+    
+    var arbiTrackingState: ArbiTrackState = .ARBI_PLACEMENT
+    var objectType: ObjectType = .video
     
     // UIViewController
 
     override func viewDidLoad() {
         super.viewDidLoad()
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        setupButtons()
+    }
+    
 
     // setup
     
     override func setupContent() {
         setupModel()
+        setupVideo()
         setupArbiTrack()
         
         let pinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(arbiPinch(_:)))
@@ -54,7 +70,12 @@ class ViewController: ARCameraViewController {
         lastScale = Float(gesture.scale)
         
         synchronize(lockObj: ARRenderer.getInstance()) { 
-            self.modelNode?.scale(byUniform: scaleFactor)
+            switch objectType {
+            case .model:
+                self.modelNode?.scale(byUniform: scaleFactor)
+            case .video:
+                self.videoNode?.scale(byUniform: scaleFactor)
+            }
         }
     }
     
@@ -67,8 +88,13 @@ class ViewController: ARCameraViewController {
         let diff = x - lastPanX
         let deg = diff * 0.5
         
-        synchronize(lockObj: ARRenderer.getInstance()) { 
-            self.modelNode?.rotate(byDegrees: deg, axisX: 0, y: 1, z: 0)
+        synchronize(lockObj: ARRenderer.getInstance()) {
+            switch objectType {
+            case .model:
+                self.modelNode?.rotate(byDegrees: deg, axisX: 0, y: 1, z: 0)
+            case .video:
+                self.videoNode?.rotate(byDegrees: deg, axisX: 0, y: 1, z: 0)
+            }
         }
         
         lastPanX = x
@@ -76,29 +102,80 @@ class ViewController: ARCameraViewController {
     
     func arbiTap(_ gesture: UITapGestureRecognizer) {
         let arbiTrack: ARArbiTrackerManager = ARArbiTrackerManager.getInstance()
-        if (arbiButtonState == .ARBI_PLACEMENT) {
+        if (arbiTrackingState == .ARBI_PLACEMENT) {
+            guard let targetNode = arbiTrack.targetNode else {
+                print("ERROR: failed to start tracking")
+                return
+            }
             arbiTrack.start()
-            arbiTrack.targetNode.visible = false
-            modelNode?.scale = ARVector3(valuesX: 1, y: 1, z: 1)
-            arbiButtonState = .ARBI_TRACKING
-            print("TRACKINGTRACKING")
+            targetNode.visible = false
+            
+            switch objectType {
+            case .model:
+                modelNode?.scale = Constants.initialModelScale
+            case .video:
+                videoNode?.scale(byUniform: Constants.initialVideoModelScale)
+            }
+            
+            arbiTrackingState = .ARBI_TRACKING
+            print("Start Tracking")
         }
-        else if (arbiButtonState == .ARBI_TRACKING) {
+        else if (arbiTrackingState == .ARBI_TRACKING) {
             arbiTrack.stop()
             arbiTrack.targetNode.visible = true
-            arbiButtonState = .ARBI_PLACEMENT
-            print("NOTTRACKINGNOTTRACKING")
+            arbiTrackingState = .ARBI_PLACEMENT
+            print("End Tracking")
         }
+    }
+    
+    func videoWasTouched(_ gesture: UITapGestureRecognizer) {
+        videoNode?.reset()
+        videoNode?.play()
+    }
+    
+    func videoButtonTapped(_ gesture: UITapGestureRecognizer) {
+        let arbiTrack: ARArbiTrackerManager = ARArbiTrackerManager.getInstance()
+
+        guard let modelNode = modelNode else { return }
+        guard let videoNode = videoNode else { return }
+        
+        arbiTrack.world.removeChild(modelNode)
+
+        let children = arbiTrack.world.children
+        if (children?.contains(videoNode) == true) {
+            videoNode.reset()
+            videoNode.play()
+        } else {
+            arbiTrack.world.addChild(videoNode)
+        }
+        
+        objectType = .video
+    }
+    
+    func modelButtonTapped(_ gesture: UITapGestureRecognizer) {
+        let arbiTrack: ARArbiTrackerManager = ARArbiTrackerManager.getInstance()
+        
+        guard let modelNode = modelNode else { return }
+        guard let videoNode = videoNode else { return }
+        
+        videoNode.reset()
+        arbiTrack.world.removeChild(videoNode)
+
+        let children = arbiTrack.world.children
+        if (children?.contains(modelNode) == false) {
+            arbiTrack.world.addChild(modelNode)
+        }
+        
+        objectType = .model
     }
     
     // private functions
     
     private func setupModel() {
-        // import model from file
-        guard let falconImporter = ARModelImporter(bundled: "millenium-falcon.armodel"),
-            let textureImage = UIImage(named: "falcon.jpg"),
-            let falconModelNode = falconImporter.getNode() else {
-            print("ERROR: FAILED TO GET FALCON MODEL")
+        guard let importer = ARModelImporter(bundled: "big_ben.armodel"),
+            let textureImage = UIImage(named: "big_ben.png"),
+            let tempModelNode = importer.getNode() else {
+            print("ERROR: FAILED TO GET MODEL")
             return
         }
         
@@ -112,12 +189,43 @@ class ViewController: ARCameraViewController {
         material.shininess = 20
         material.reflection.reflectivity = 0.15
         
-        let meshNodes = falconModelNode.meshNodes.flatMap { $0 as? ARMeshNode }
+        let meshNodes = tempModelNode.meshNodes.flatMap { $0 as? ARMeshNode }
         for meshNode in meshNodes {
             meshNode.material = material
         }
         
-        self.modelNode = falconModelNode
+        self.modelNode = tempModelNode
+    }
+    
+    private func setupVideo() {
+        videoNode = ARVideoNode(bundledFile: "star_wars_trailer.mp4")
+        guard let videoNode = videoNode else {
+            print("ERROR: Failed to setup video")
+            return
+        }
+        
+        videoNode.scale(byUniform: 0.35)
+        videoNode.rotate(byDegrees: 0, axisX: 0, y: 0, z: 1)
+        videoNode.play()
+        videoNode.videoTextureMaterial.fadeInTime = 1
+        videoNode.videoTexture.resetThreshold = 21
+        //videoNode.addTouchTarget(self, withAction: #selector(videoWasTouched(_:)))
+    }
+    
+    private func setupButtons() {
+        let videoButton = UIButton(frame: CGRect(x: 75, y: 500, width: 90, height: 40))
+        videoButton.backgroundColor = UIColor.black
+        videoButton.setTitleColor(UIColor.white, for: .normal)
+        videoButton.setTitle("Video", for: .normal)
+        videoButton.addTarget(self, action: #selector(videoButtonTapped(_:)), for: .touchUpInside)
+        let modelButton = UIButton(frame: CGRect(x: 225, y: 500, width: 90, height: 40))
+        modelButton.backgroundColor = UIColor.black
+        modelButton.setTitleColor(UIColor.white, for: .normal)
+        modelButton.setTitle("Model", for: .normal)
+        modelButton.addTarget(self, action: #selector(modelButtonTapped(_:)), for: .touchUpInside)
+        
+        view.addSubview(videoButton)
+        view.addSubview(modelButton)
     }
     
     private func setupArbiTrack() {
@@ -126,13 +234,12 @@ class ViewController: ARCameraViewController {
             let targetImage = UIImage(named: "target.png"),
             let targetNode = ARNode(name: "targetNode"),
             let targetImageNode = ARImageNode(image: targetImage),
-            let arbiTrack = ARArbiTrackerManager.getInstance(),
-            let modelNode = modelNode else {
+            let arbiTrack = ARArbiTrackerManager.getInstance() else {
             print("ERROR: Setup Arbi Track FAILED")
             return
         }
         
-        // Set up the target node on which the model is placed.
+        // Set up the target node on which the object is placed.
         gyroPlaceManager.initialise()
         gyroPlaceManager.world.addChild(targetNode)
         
@@ -145,7 +252,15 @@ class ViewController: ARCameraViewController {
         
         arbiTrack.initialise()
         arbiTrack.targetNode = targetNode
-        arbiTrack.world.addChild(modelNode)
+        
+        switch objectType {
+        case .model:
+            guard let modelNode = modelNode else { return }
+            arbiTrack.world.addChild(modelNode)
+        case .video:
+            guard let videoNode = videoNode else { return }
+            arbiTrack.world.addChild(videoNode)
+        }
     }
     
     private func synchronize(lockObj: AnyObject!, closure: ()->()){
@@ -154,5 +269,10 @@ class ViewController: ARCameraViewController {
         objc_sync_exit(lockObj)
     }
     
+}
+
+private class Constants {
+    static let initialModelScale: ARVector3 = ARVector3(valuesX: 0.03, y: 0.03, z: 0.03)
+    static let initialVideoModelScale: Float = 0.5
 }
 

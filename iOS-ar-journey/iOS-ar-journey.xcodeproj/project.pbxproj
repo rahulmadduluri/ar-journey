@@ -18,6 +18,12 @@
 		B70D16D41EAD984C00544663 /* falcon.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B70D16D31EAD984C00544663 /* falcon.jpg */; };
 		B70D16D71EAD988100544663 /* Map__6_Noise.tga in Resources */ = {isa = PBXBuildFile; fileRef = B70D16D51EAD988100544663 /* Map__6_Noise.tga */; };
 		B70D16D81EAD988100544663 /* Map__10_Raytrace.tga in Resources */ = {isa = PBXBuildFile; fileRef = B70D16D61EAD988100544663 /* Map__10_Raytrace.tga */; };
+		B70D16DA1EADB37400544663 /* bloodhound.armodel in Resources */ = {isa = PBXBuildFile; fileRef = B70D16D91EADB37400544663 /* bloodhound.armodel */; };
+		B70D16DC1EADB3A000544663 /* bloodhound.png in Resources */ = {isa = PBXBuildFile; fileRef = B70D16DB1EADB3A000544663 /* bloodhound.png */; };
+		B70D16E01EADD88E00544663 /* big_ben.armodel in Resources */ = {isa = PBXBuildFile; fileRef = B70D16DF1EADD88E00544663 /* big_ben.armodel */; };
+		B70D16E21EADD89800544663 /* big_ben.png in Resources */ = {isa = PBXBuildFile; fileRef = B70D16E11EADD89800544663 /* big_ben.png */; };
+		B70D16E51EADEACD00544663 /* star_wars_trailer.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B70D16E41EADEACD00544663 /* star_wars_trailer.mp4 */; };
+		B70D16E81EADF4E900544663 /* star_wars_trailer.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B70D16E71EADF4E900544663 /* star_wars_trailer.mp4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +40,12 @@
 		B70D16D31EAD984C00544663 /* falcon.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = falcon.jpg; sourceTree = "<group>"; };
 		B70D16D51EAD988100544663 /* Map__6_Noise.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = Map__6_Noise.tga; sourceTree = "<group>"; };
 		B70D16D61EAD988100544663 /* Map__10_Raytrace.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = Map__10_Raytrace.tga; sourceTree = "<group>"; };
+		B70D16D91EADB37400544663 /* bloodhound.armodel */ = {isa = PBXFileReference; lastKnownFileType = file; path = bloodhound.armodel; sourceTree = "<group>"; };
+		B70D16DB1EADB3A000544663 /* bloodhound.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bloodhound.png; sourceTree = "<group>"; };
+		B70D16DF1EADD88E00544663 /* big_ben.armodel */ = {isa = PBXFileReference; lastKnownFileType = file; path = big_ben.armodel; sourceTree = "<group>"; };
+		B70D16E11EADD89800544663 /* big_ben.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = big_ben.png; sourceTree = "<group>"; };
+		B70D16E41EADEACD00544663 /* star_wars_trailer.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = star_wars_trailer.mp4; sourceTree = "<group>"; };
+		B70D16E71EADF4E900544663 /* star_wars_trailer.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = star_wars_trailer.mp4; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,10 +82,11 @@
 		B70D16B91EACC84400544663 /* iOS-ar-journey */ = {
 			isa = PBXGroup;
 			children = (
-				B70D16D11EAD80C600544663 /* millenium-falcon.armodel */,
-				B70D16D51EAD988100544663 /* Map__6_Noise.tga */,
-				B70D16D61EAD988100544663 /* Map__10_Raytrace.tga */,
-				B70D16D31EAD984C00544663 /* falcon.jpg */,
+				B70D16E71EADF4E900544663 /* star_wars_trailer.mp4 */,
+				B70D16E61EADEAD200544663 /* Star_Wars_Trailer */,
+				B70D16E31EADD8A100544663 /* Big_Ben */,
+				B70D16DD1EADD02000544663 /* Millenium_Falcon */,
+				B70D16DE1EADD03200544663 /* Bloodhound */,
 				B70D16BA1EACC84400544663 /* AppDelegate.swift */,
 				B70D16BC1EACC84400544663 /* ViewController.swift */,
 				B70D16BE1EACC84400544663 /* Main.storyboard */,
@@ -90,6 +103,43 @@
 				B70D16CC1EACC8DF00544663 /* KudanAR.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B70D16DD1EADD02000544663 /* Millenium_Falcon */ = {
+			isa = PBXGroup;
+			children = (
+				B70D16D11EAD80C600544663 /* millenium-falcon.armodel */,
+				B70D16D51EAD988100544663 /* Map__6_Noise.tga */,
+				B70D16D61EAD988100544663 /* Map__10_Raytrace.tga */,
+				B70D16D31EAD984C00544663 /* falcon.jpg */,
+			);
+			path = Millenium_Falcon;
+			sourceTree = "<group>";
+		};
+		B70D16DE1EADD03200544663 /* Bloodhound */ = {
+			isa = PBXGroup;
+			children = (
+				B70D16D91EADB37400544663 /* bloodhound.armodel */,
+				B70D16DB1EADB3A000544663 /* bloodhound.png */,
+			);
+			path = Bloodhound;
+			sourceTree = "<group>";
+		};
+		B70D16E31EADD8A100544663 /* Big_Ben */ = {
+			isa = PBXGroup;
+			children = (
+				B70D16E11EADD89800544663 /* big_ben.png */,
+				B70D16DF1EADD88E00544663 /* big_ben.armodel */,
+			);
+			path = Big_Ben;
+			sourceTree = "<group>";
+		};
+		B70D16E61EADEAD200544663 /* Star_Wars_Trailer */ = {
+			isa = PBXGroup;
+			children = (
+				B70D16E41EADEACD00544663 /* star_wars_trailer.mp4 */,
+			);
+			path = Star_Wars_Trailer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -152,8 +202,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B70D16E51EADEACD00544663 /* star_wars_trailer.mp4 in Resources */,
+				B70D16E01EADD88E00544663 /* big_ben.armodel in Resources */,
 				B70D16C51EACC84400544663 /* LaunchScreen.storyboard in Resources */,
+				B70D16E81EADF4E900544663 /* star_wars_trailer.mp4 in Resources */,
+				B70D16DC1EADB3A000544663 /* bloodhound.png in Resources */,
 				B70D16D81EAD988100544663 /* Map__10_Raytrace.tga in Resources */,
+				B70D16E21EADD89800544663 /* big_ben.png in Resources */,
+				B70D16DA1EADB37400544663 /* bloodhound.armodel in Resources */,
 				B70D16C21EACC84400544663 /* Assets.xcassets in Resources */,
 				B70D16D21EAD80C600544663 /* millenium-falcon.armodel in Resources */,
 				B70D16D71EAD988100544663 /* Map__6_Noise.tga in Resources */,
